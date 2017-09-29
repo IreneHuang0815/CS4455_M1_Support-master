@@ -74,6 +74,7 @@ public class YBotSimpleControlScript : MonoBehaviour
         float h = Input.GetAxisRaw("Horizontal");// setup h variable as our horizontal input axis
         float v = Input.GetAxisRaw("Vertical");	// setup v variables as our vertical input axis
 		float run;
+		bool isFalling = !IsGrounded;
 
 
         //enforce circular joystick mapping which should coincide with circular blendtree positions
@@ -95,6 +96,34 @@ public class YBotSimpleControlScript : MonoBehaviour
 			run = 0.0f;
 		}
 
+		//Deal with falling
+		if (isFalling) {
+			const float rayOriginOffset = 1f;
+			const float rayDepth = 1f;
+			const float totalRayLen = rayOriginOffset + rayDepth;
+
+			Ray ray = new Ray (this.transform.position + Vector3.up * rayOriginOffset, Vector3.down);
+
+			Debug.DrawLine (ray.origin, ray.origin + ray.direction * totalRayLen, Color.green);
+
+			RaycastHit hit;
+
+			if (Physics.Raycast (ray, out hit, totalRayLen)) {
+				if (hit.collider.gameObject.CompareTag ("ground")) {
+					isFalling = false;
+
+					const float ZBufFix = 0.01f;
+					const float edgeSize = 0.2f;
+					Color col = Color.red;
+
+					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.forward * edgeSize, col);
+					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.left * edgeSize, col);
+					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.right * edgeSize, col);
+					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.back * edgeSize, col);
+
+				}
+			}
+		}
         if (Input.GetKeyUp(KeyCode.Alpha1))
             forwardSpeedLimit = 0.1f;
         else if (Input.GetKeyUp(KeyCode.Alpha2))
@@ -129,6 +158,7 @@ public class YBotSimpleControlScript : MonoBehaviour
         anim.SetFloat("velx", filteredTurnInput);	// set our animator's float parameter 'Speed' equal to the vertical input axis				
         anim.SetFloat("vely", filteredForwardInput); // set our animator's float parameter 'Direction' equal to the horizontal input axis		
 		anim.SetFloat("run", run);
+		anim.Setbool ("isFalling", isFalling);
 
         //if (Input.GetButtonDown("Fire1")) //normally left-ctrl on keyboard
         //    anim.SetTrigger("throw"); 
