@@ -28,7 +28,7 @@ public class YBotSimpleControlScript : MonoBehaviour
 
     private float forwardSpeedLimit = 1f;
 
-	private float jumpH = 8;
+	private float jumpH = 2;
 
     public bool IsGrounded
     {
@@ -79,8 +79,7 @@ public class YBotSimpleControlScript : MonoBehaviour
         float v = Input.GetAxisRaw("Vertical");	// setup v variables as our vertical input axis
 		float run;
 		bool isFalling = !IsGrounded;
-		bool isJumping = !IsGrounded;
-
+        bool isJumping = false;
 
         //enforce circular joystick mapping which should coincide with circular blendtree positions
         Vector2 vec = Vector2.ClampMagnitude(new Vector2(h, v), 1.0f);
@@ -148,7 +147,6 @@ public class YBotSimpleControlScript : MonoBehaviour
 
 		if (IsGrounded && isJumping) {
 			ExecuteJumpLaunch ();
-			isJumping = true;
 		}
 
         //do some filtering of our input as well as clamp to a speed limit
@@ -200,15 +198,15 @@ public class YBotSimpleControlScript : MonoBehaviour
 	{
 		anim.applyRootMotion = false;
 		//capsule.material = noFrictionPhysicsMaterial;////TODO
-		var lastForwardSign;
+		int lastForwardSign;
 		if (filteredForwardInput > 0) {
 			lastForwardSign = 1;
 		} else {
 			lastForwardSign = -1;
 		}
-		var lastVelocity = ;
+        Vector3 lastVelocity = rbody.velocity;
 
-		Vector3 launchV = lastForwardSign*jumpForwardSpeedScalar*lastVelocity.magnitude*transform.forward + jumpVertSpeed*Vector3.up;
+		Vector3 launchV = lastForwardSign*lastVelocity.magnitude*transform.forward + jumpH * Vector3.up;
 		rbody.AddForce(launchV, ForceMode.VelocityChange);
 		EventManager.TriggerEvent<JumpEvent, Vector3>(transform.position);
 	}
