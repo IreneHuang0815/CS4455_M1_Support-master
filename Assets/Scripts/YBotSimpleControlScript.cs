@@ -203,9 +203,9 @@ public class YBotSimpleControlScript : MonoBehaviour
 		var lastForwardSign;
 		if (filteredForwardInput > 0) {
 			lastForwardSign = 1;
-		} else
+		} else {
 			lastForwardSign = -1;
-			}
+		}
 		var lastVelocity = ;
 
 		Vector3 launchV = lastForwardSign*jumpForwardSpeedScalar*lastVelocity.magnitude*transform.forward + jumpVertSpeed*Vector3.up;
