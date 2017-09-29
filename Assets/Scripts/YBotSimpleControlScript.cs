@@ -118,14 +118,9 @@ public class YBotSimpleControlScript : MonoBehaviour
 				}
 			}
 		}
-		if (IsGrounded) {
-			if (Input.GetKey (KeyCode.Space) && isFalling == false) {
-				rbody.velocity.y = jumpH;
-				ExecuteJumpLaunch ();
-				isJumping = true;
-			}
-		} else {
-			isJumping 
+
+		if (Input.GetKey (KeyCode.Space) && isFalling == false) {
+			isJumping = true;
 		}
 
         if (Input.GetKeyUp(KeyCode.Alpha1))
@@ -151,6 +146,10 @@ public class YBotSimpleControlScript : MonoBehaviour
         //END ANALOG ON KEYBOARD DEMO CODE  
 
 
+		if (IsGrounded && isJumping) {
+			ExecuteJumpLaunch ();
+			isJumping = true;
+		}
 
         //do some filtering of our input as well as clamp to a speed limit
         filteredForwardInput = Mathf.Clamp(Mathf.Lerp(filteredForwardInput, v, 
@@ -201,6 +200,14 @@ public class YBotSimpleControlScript : MonoBehaviour
 	{
 		anim.applyRootMotion = false;
 		//capsule.material = noFrictionPhysicsMaterial;////TODO
+		var lastForwardSign;
+		if (filteredForwardInput > 0) {
+			lastForwardSign = 1;
+		} else
+			lastForwardSign = -1;
+			}
+		var lastVelocity = ;
+
 		Vector3 launchV = lastForwardSign*jumpForwardSpeedScalar*lastVelocity.magnitude*transform.forward + jumpVertSpeed*Vector3.up;
 		rbody.AddForce(launchV, ForceMode.VelocityChange);
 		EventManager.TriggerEvent<JumpEvent, Vector3>(transform.position);
