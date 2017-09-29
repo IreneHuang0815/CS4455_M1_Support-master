@@ -104,7 +104,7 @@ public class YBotSimpleControlScript : MonoBehaviour
 
 			Ray ray = new Ray (this.transform.position + Vector3.up * rayOriginOffset, Vector3.down);
 
-			Debug.DrawLine (ray.origin, ray.origin + ray.direction * totalRayLen, Color.green);
+			//Debug.DrawLine (ray.origin, ray.origin + ray.direction * totalRayLen, Color.green);
 
 			RaycastHit hit;
 
@@ -116,10 +116,10 @@ public class YBotSimpleControlScript : MonoBehaviour
 					const float edgeSize = 0.2f;
 					Color col = Color.red;
 
-					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.forward * edgeSize, col);
-					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.left * edgeSize, col);
-					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.right * edgeSize, col);
-					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.back * edgeSize, col);
+//					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.forward * edgeSize, col);
+//					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.left * edgeSize, col);
+//					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.right * edgeSize, col);
+//					Debug.DrawRay(hit.point + Vector3.up * ZBufFix, Vector3.back * edgeSize, col);
 
 				}
 			}
@@ -158,7 +158,7 @@ public class YBotSimpleControlScript : MonoBehaviour
         anim.SetFloat("velx", filteredTurnInput);	// set our animator's float parameter 'Speed' equal to the vertical input axis				
         anim.SetFloat("vely", filteredForwardInput); // set our animator's float parameter 'Direction' equal to the horizontal input axis		
 		anim.SetFloat("run", run);
-		anim.Setbool ("isFalling", isFalling);
+		anim.SetBool("isFalling", isFalling);
 
         //if (Input.GetButtonDown("Fire1")) //normally left-ctrl on keyboard
         //    anim.SetTrigger("throw"); 
@@ -173,7 +173,7 @@ public class YBotSimpleControlScript : MonoBehaviour
         {
             ++groundContacts;
 
-            Debug.Log("Player hit the ground at: " + collision.impulse.magnitude);
+            //Debug.Log("Player hit the ground at: " + collision.impulse.magnitude);
 
             if (collision.impulse.magnitude > 100f)
             {               
