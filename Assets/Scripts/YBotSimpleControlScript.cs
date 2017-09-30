@@ -12,6 +12,7 @@ public class YBotSimpleControlScript : MonoBehaviour
 {
     private Animator anim;	
     private Rigidbody rbody;
+	private AnimatorStateInfo currentBaseState;
 
 
 
@@ -28,7 +29,10 @@ public class YBotSimpleControlScript : MonoBehaviour
 
     private float forwardSpeedLimit = 1f;
 
-	private float jumpH = 2;
+	private float jumpH = 4;
+
+	//different staes
+	static int idleState = Animator.StringToHash("Base Layer.Idle Turn");
 
     public bool IsGrounded
     {
@@ -73,7 +77,11 @@ public class YBotSimpleControlScript : MonoBehaviour
     //setting in Animator component under the Inspector
     void FixedUpdate()
     {
-	
+		currentBaseState = anim.GetCurrentAnimatorStateInfo(0);
+		if (currentBaseState.nameHash == idleState) {
+		
+			Debug.Log ("Its idle state bitch");
+		}
         //GetAxisRaw() so we can do filtering here instead of the InputManager
         float h = Input.GetAxisRaw("Horizontal");// setup h variable as our horizontal input axis
         float v = Input.GetAxisRaw("Vertical");	// setup v variables as our vertical input axis
@@ -230,5 +238,5 @@ public class YBotSimpleControlScript : MonoBehaviour
         this.transform.rotation = anim.rootRotation;
         				
     }
-
+		
 }
