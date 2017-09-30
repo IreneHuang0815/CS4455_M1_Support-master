@@ -13,6 +13,7 @@ public class YBotSimpleControlScript : MonoBehaviour
     private Animator anim;	
     private Rigidbody rbody;
 	private AnimatorStateInfo currentBaseState;
+	private CapsuleCollider col;
 
 
 
@@ -33,6 +34,10 @@ public class YBotSimpleControlScript : MonoBehaviour
 
 	//different staes
 	static int idleState = Animator.StringToHash("Base Layer.Idle Turn");
+	static int runForwardState = Animator.StringToHash("Base Layer.Run Forward");
+	static int walkForwardState = Animator.StringToHash("Base Layer.Blend Tree - Forward");
+	static int jumpingState = Animator.StringToHash("Base Layer.Jumping");
+	static int falllingState = Animator.StringToHash("Base Layer.Falling");
 
     public bool IsGrounded
     {
@@ -59,6 +64,7 @@ public class YBotSimpleControlScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+		col = GetComponent<CapsuleCollider>();	
 		//example of how to get access to certain limbs
         leftFoot = this.transform.Find("mixamorig:Hips/mixamorig:LeftUpLeg/mixamorig:LeftLeg/mixamorig:LeftFoot");
         rightFoot = this.transform.Find("mixamorig:Hips/mixamorig:RightUpLeg/mixamorig:RightLeg/mixamorig:RightFoot");
@@ -77,6 +83,7 @@ public class YBotSimpleControlScript : MonoBehaviour
     //setting in Animator component under the Inspector
     void FixedUpdate()
     {
+		Debug.Log(groundContacts);
 		currentBaseState = anim.GetCurrentAnimatorStateInfo(0);
 		if (currentBaseState.nameHash == idleState) {
 		
@@ -107,28 +114,45 @@ public class YBotSimpleControlScript : MonoBehaviour
 		} else {
 			run = 0.0f;
 		}
+			
+		if (currentBaseState.nameHash == walkForwardState || currentBaseState.nameHash == runForwardState) {
+			if (Input.GetKey(KeyCode.Space)) {
+				isJumping = true;
+				Debug.Log ("Height is: " + col.height);
+			}
+		} else if (currentBaseState.nameHash == jumpingState) {
+			if (!anim.IsInTransition (0)) {
+				col.height = anim.GetFloat("ColliderHeight");
+				Debug.Log ("now Height is: " + col.height);
 
-		//Deal with falling
-		if (isFalling) {
-			const float rayOriginOffset = 1f;
-			const float rayDepth = 1f;
-			const float totalRayLen = rayOriginOffset + rayDepth;
+				isJumping = false;
+			}
+			Ray ray = new Ray(transform.position + Vector3.up, -Vector3.up);
+			RaycastHit hitInfo = new RaycastHit();
 
-			Ray ray = new Ray (this.transform.position + Vector3.up * rayOriginOffset, Vector3.down);
-
-			RaycastHit hit;
-
-			if (Physics.Raycast (ray, out hit, totalRayLen)) {
-				if (hit.collider.gameObject.CompareTag ("ground")) {
-					isFalling = false;
-
+			if (Physics.Raycast(ray, out hitInfo))
+			{
+				if (hitInfo.distance > 1.75f)
+				{
+					anim.MatchTarget(hitInfo.point, Quaternion.identity, AvatarTarget.Root, new MatchTargetWeightMask(new Vector3(0, 1, 0), 0), 0.35f, 0.5f);
 				}
 			}
-		}
+		} else if (currentBaseState.nameHash == falllingState) {
+				const float rayOriginOffset = 1f;
+				const float rayDepth = 1f;
+				const float totalRayLen = rayOriginOffset + rayDepth;
 
-		if (Input.GetKey (KeyCode.Space) && isFalling == false) {
-			isJumping = true;
-		}
+				Ray ray = new Ray (this.transform.position + Vector3.up * rayOriginOffset, Vector3.down);
+
+				RaycastHit hit;
+
+				if (Physics.Raycast (ray, out hit, totalRayLen)) {
+					if (hit.collider.gameObject.CompareTag ("ground")) {
+						isFalling = false;
+					}
+				}
+			}
+		
 
         if (Input.GetKeyUp(KeyCode.Alpha1))
             forwardSpeedLimit = 0.1f;
@@ -153,9 +177,9 @@ public class YBotSimpleControlScript : MonoBehaviour
         //END ANALOG ON KEYBOARD DEMO CODE  
 
 
-		if (IsGrounded && isJumping) {
-			ExecuteJumpLaunch ();
-		}
+//		if (IsGrounded && isJumping) {
+//			ExecuteJumpLaunch ();
+//		}
 
         //do some filtering of our input as well as clamp to a speed limit
         filteredForwardInput = Mathf.Clamp(Mathf.Lerp(filteredForwardInput, v, 
