@@ -14,7 +14,7 @@ public class YBotSimpleControlScript : MonoBehaviour
     private Rigidbody rbody;
 	private AnimatorStateInfo currentBaseState;
 	private CapsuleCollider col;
-
+	float lastTimeFootStep = 0;
 
 
     private Transform leftFoot;
@@ -83,12 +83,8 @@ public class YBotSimpleControlScript : MonoBehaviour
     //setting in Animator component under the Inspector
     void FixedUpdate()
     {
-		Debug.Log(groundContacts);
+		//Debug.Log(groundContacts);
 		currentBaseState = anim.GetCurrentAnimatorStateInfo(0);
-		if (currentBaseState.nameHash == idleState) {
-		
-			Debug.Log ("Its idle state bitch");
-		}
         //GetAxisRaw() so we can do filtering here instead of the InputManager
         float h = Input.GetAxisRaw("Horizontal");// setup h variable as our horizontal input axis
         float v = Input.GetAxisRaw("Vertical");	// setup v variables as our vertical input axis
@@ -114,16 +110,15 @@ public class YBotSimpleControlScript : MonoBehaviour
 		} else {
 			run = 0.0f;
 		}
-			
 		if (currentBaseState.nameHash == walkForwardState || currentBaseState.nameHash == runForwardState) {
 			if (Input.GetKey(KeyCode.Space)) {
 				isJumping = true;
-				Debug.Log ("Height is: " + col.height);
+				//Debug.Log ("Height is: " + col.height);
 			}
 		} else if (currentBaseState.nameHash == jumpingState) {
 			if (!anim.IsInTransition (0)) {
 				col.height = anim.GetFloat("ColliderHeight");
-				Debug.Log ("now Height is: " + col.height);
+				//Debug.Log ("now Height is: " + col.height);
 
 				isJumping = false;
 			}
@@ -203,8 +198,12 @@ public class YBotSimpleControlScript : MonoBehaviour
     //This is a physics callback
     void OnCollisionEnter(Collision collision)
     {
-
-        if (collision.transform.gameObject.tag == "ground")
+		float currentTime = Time.time;
+		if (currentTime- lastTimeFootStep > 0.6) {
+			GetComponent<AudioSource> ().Play ();
+			lastTimeFootStep = currentTime;
+		}
+		if (collision.transform.gameObject.tag == "ground")
         {
             ++groundContacts;
 
@@ -212,7 +211,7 @@ public class YBotSimpleControlScript : MonoBehaviour
 
             if (collision.impulse.magnitude > 100f)
             {               
-                EventManager.TriggerEvent<PlayerLandsEvent, Vector3>(collision.contacts[0].point);
+                //EventManager.TriggerEvent<PlayerLandsEvent, Vector3>(collision.contacts[0].point);
             }
         }
 						
@@ -240,7 +239,7 @@ public class YBotSimpleControlScript : MonoBehaviour
 
 		Vector3 launchV = lastForwardSign*lastVelocity.magnitude*transform.forward + jumpH * Vector3.up;
 		rbody.AddForce(launchV, ForceMode.VelocityChange);
-		EventManager.TriggerEvent<JumpEvent, Vector3>(transform.position);
+		//EventManager.TriggerEvent<JumpEvent, Vector3>(transform.position);
 	}
 
 

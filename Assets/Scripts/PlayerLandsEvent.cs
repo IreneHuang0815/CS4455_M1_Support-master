@@ -3,4 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class PlayerLandsEvent: UnityEvent<Vector3>{}
+public class PlayerLandsEvent: UnityEvent<Vector3>
+{
+}

@@ -11,7 +11,7 @@ public class CrateCollisionReporter : MonoBehaviour
         if (c.impulse.magnitude > 0.5f)
         {
             //we'll just use the first contact point for simplicity
-            EventManager.TriggerEvent<BoxCollisionEvent, Vector3>(c.contacts[0].point);
+            //EventManager.TriggerEvent<BoxCollisionEvent, Vector3>(c.contacts[0].point);
         }
             
 

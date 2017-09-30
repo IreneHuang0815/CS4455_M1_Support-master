@@ -11,10 +11,8 @@ public class PlayerLandsReporter : MonoBehaviour
         if (c.impulse.magnitude > 0.5f)
         {
             //we'll just use the first contact point for simplicity
-            EventManager.TriggerEvent<PlayerLandsEvent, Vector3>(c.contacts[0].point);
+            //EventManager.TriggerEvent<PlayerLandsEvent, Vector3>(c.contacts[0].point);
         }
-            
-
 //				foreach (ContactPoint contact in c.contacts) {
 //
 //						if (c.impulse.magnitude > 0.5f)
